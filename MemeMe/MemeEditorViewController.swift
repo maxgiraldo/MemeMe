@@ -8,8 +8,9 @@
 
 import UIKit
 
-class MemeEditorViewController: UIViewController, UITextFieldDelegate {
+class MemeEditorViewController: UIViewController, UINavigationControllerDelegate, UITextFieldDelegate, UIImagePickerControllerDelegate {
   @IBOutlet weak var topText: UITextField!
+  @IBOutlet weak var imageView: UIImageView!
   
   let memeTextAttributes: [NSString: AnyObject] = [
     NSStrokeColorAttributeName: UIColor.blackColor(),
@@ -20,8 +21,12 @@ class MemeEditorViewController: UIViewController, UITextFieldDelegate {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.topText.text = "TOP"
+    self.topText.textAlignment = NSTextAlignment.Center
     self.topText.defaultTextAttributes = memeTextAttributes
     self.topText.delegate = self
+
+    self.imageView.contentMode = UIViewContentMode.ScaleAspectFit
   }
   
   override func viewWillAppear(animated: Bool) {
@@ -82,6 +87,29 @@ class MemeEditorViewController: UIViewController, UITextFieldDelegate {
   
   func unsubscribeFromKeyboardNotifications() {
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
+  }
+  
+  func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+    if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
+      imageView.image = image
+      picker.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+  }
+  
+  func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+    picker.dismissViewControllerAnimated(true, completion: nil)
+  }
+  
+  @IBAction func takePhoto(sender: AnyObject) {
+  }
+  
+  @IBAction func choosePhoto(sender: AnyObject) {
+    let choosePhotoController = UIImagePickerController()
+    choosePhotoController.allowsEditing = true
+    choosePhotoController.delegate = self
+    choosePhotoController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
+    self.showViewController(choosePhotoController, sender: self)
   }
 
 }
