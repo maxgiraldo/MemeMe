@@ -18,6 +18,4 @@ class Meme {
     self.image = originalImage
     self.meme = meme
   }
-  
-  
 }

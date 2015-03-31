@@ -9,24 +9,28 @@
 import UIKit
 
 class MemeEditorViewController: UIViewController, UINavigationControllerDelegate, UITextFieldDelegate, UIImagePickerControllerDelegate {
+
   @IBOutlet weak var topText: UITextField!
+  @IBOutlet weak var bottomText: UITextField!
   @IBOutlet weak var imageView: UIImageView!
+  @IBOutlet weak var toolbar: UIToolbar!
+  @IBOutlet weak var shareButton: UIBarButtonItem!
   
   let memeTextAttributes: [NSString: AnyObject] = [
     NSStrokeColorAttributeName: UIColor.blackColor(),
-    NSForegroundColorAttributeName: UIColor.whiteColor(),
+    NSForegroundColorAttributeName: UIColor(red: CGFloat(1.0), green: CGFloat(1.0), blue: CGFloat(1.0), alpha: CGFloat(1.0)),
     NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
-    NSStrokeWidthAttributeName : 2.0
+    NSStrokeWidthAttributeName : -3.0
   ]
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.topText.text = "TOP"
-    self.topText.textAlignment = NSTextAlignment.Center
-    self.topText.defaultTextAttributes = memeTextAttributes
-    self.topText.delegate = self
+    
+    self.setDefaultTextAttributes(self.topText, defaultText: "TOP")
+    self.setDefaultTextAttributes(self.bottomText, defaultText: "BOTTOM")
 
     self.imageView.contentMode = UIViewContentMode.ScaleAspectFit
+    self.shareButton.enabled = false
   }
   
   override func viewWillAppear(animated: Bool) {
@@ -40,24 +44,88 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     self.unsubscribeFromKeyboardNotifications()
     self.unsubscribeToKeyboardWillHideNotifications()
   }
+
+  // Textfield attributes
   
-  func generateMemedImage() -> UIImage {
-    // TODO: Hide toolbar and navbar
-    
-    UIGraphicsBeginImageContext(self.view.frame.size)
-    self.view.drawViewHierarchyInRect(self.view.frame, afterScreenUpdates: true)
-    let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()
-    UIGraphicsEndImageContext()
-    
-    // TODO: Show toolbar and navbar
-    
-    return memedImage
+  func setDefaultTextAttributes(textField: UITextField, defaultText: String) {
+    textField.text = defaultText
+    textField.defaultTextAttributes = memeTextAttributes
+    textField.textAlignment = NSTextAlignment.Center
+    textField.delegate = self
+  }
+  
+  // Textfield delegate helper functions
+  
+  func isLowerCase(char: String) -> Bool {
+    return char == char.lowercaseString
+  }
+  
+  // Textfield delegate methods
+  
+  func textFieldDidBeginEditing(textField: UITextField) {
+    if textField.text == "TOP" || textField.text == "BOTTOM" {
+      textField.text = ""
+    }
   }
   
   func textFieldShouldReturn(textField: UITextField) -> Bool {
     textField.resignFirstResponder()
     return true
   }
+  
+  func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    if range.length > 0 {
+      return true
+    } else if self.isLowerCase(string) {
+      let currentText = textField.text
+      textField.text = currentText + string.uppercaseString
+      return false
+    } else {
+      return true
+    }
+  }
+  
+  /**
+  * Generate Meme: combine separate text and image into one image file.
+  *
+  * Using UIGraphicsBeginImageContext to record what is currently in the view.
+  * Implements helper functions to show and hide tool and navigation bar items.
+  */
+  
+  func toggleNavigationBar() {
+    let shouldHideNavBar = (self.navigationController?.navigationBarHidden == false)
+    self.navigationController?.setNavigationBarHidden(shouldHideNavBar, animated: false)
+  }
+  
+  func toggleToolbar() {
+    self.toolbar.hidden = (self.toolbar.hidden == false)
+  }
+  
+  func generateMemedImage() -> UIImage {
+    self.toggleNavigationBar()
+    self.toggleToolbar()
+    
+    UIGraphicsBeginImageContext(self.view.frame.size)
+    self.view.drawViewHierarchyInRect(self.view.frame, afterScreenUpdates: true)
+    let memedImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    
+    self.toggleToolbar()
+    self.toggleNavigationBar()
+    
+    return memedImage
+  }
+  
+  @IBAction func shareMeme(sender: AnyObject) {
+    let memedImage = self.generateMemedImage()
+    
+    // TODO: define an instance of activity view controller
+    
+    // TODO: pass the ActivityViewController a memedImage as an activity item
+
+    // TODO: present the ActivityViewController
+  }
+  // Keyboard notifications
   
   func keyboardWillShow(notification: NSNotification) {
     self.view.frame.origin.y -= getKeyboardHeight(notification)
@@ -72,6 +140,8 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as NSValue // of CGRect
     return keyboardSize.CGRectValue().height
   }
+  
+  // Event listeners
 
   func subscribeToKeyboardWillHideNotifications() {
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
@@ -89,9 +159,13 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
   }
   
+  // Select image
+  
   func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
     if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
       imageView.image = image
+      self.shareButton.enabled = true
+      
       picker.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -109,7 +183,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     choosePhotoController.allowsEditing = true
     choosePhotoController.delegate = self
     choosePhotoController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
-    self.showViewController(choosePhotoController, sender: self)
+    self.navigationController!.presentViewController(choosePhotoController, animated: true, completion: nil)
   }
 
 }
