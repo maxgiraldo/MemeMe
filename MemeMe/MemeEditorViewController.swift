@@ -45,7 +45,9 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     self.unsubscribeToKeyboardWillHideNotifications()
   }
 
-  // Textfield attributes
+  /**
+  * Set the default text styles/attributes to passed in textField parameter
+  */
   
   func setDefaultTextAttributes(textField: UITextField, defaultText: String) {
     textField.text = defaultText
@@ -54,13 +56,17 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     textField.delegate = self
   }
   
-  // Textfield delegate helper functions
+  /**
+  * Textfield helper methods
+  */
   
   func isLowerCase(char: String) -> Bool {
     return char == char.lowercaseString
   }
   
-  // Textfield delegate methods
+  /**
+  * Textfield delegate methods
+  */
   
   func textFieldDidBeginEditing(textField: UITextField) {
     if textField.text == "TOP" || textField.text == "BOTTOM" {
@@ -116,19 +122,40 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     return memedImage
   }
   
+  /**
+  * Save Meme: initialize a UIActivityViewController to share the Meme via iOS's default application activities.
+  */
+  func saveMeme() {
+//    let meme = Meme(text: <#String#>, originalImage: <#UIImage#>, meme: <#UIImage#>)
+  }
+  
+  /**
+  * Share Meme: initialize a UIActivityViewController to share the Meme via iOS's default application activities.
+  */
+  
   @IBAction func shareMeme(sender: AnyObject) {
     let memedImage = self.generateMemedImage()
     
-    // TODO: define an instance of activity view controller
+    let activityViewController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
     
-    // TODO: pass the ActivityViewController a memedImage as an activity item
-
-    // TODO: present the ActivityViewController
+    activityViewController.completionWithItemsHandler = {
+      (activity: String!, completed: Bool, items: [AnyObject]!, error: NSError!) -> Void in
+      if completed {
+        self.saveMeme()
+        self.dismissViewControllerAnimated(true, completion: nil)
+      }
+    }
+    
+    
+    self.navigationController!.presentViewController(activityViewController, animated: true, completion: nil)
   }
+
   // Keyboard notifications
   
   func keyboardWillShow(notification: NSNotification) {
-    self.view.frame.origin.y -= getKeyboardHeight(notification)
+    if self.bottomText.isFirstResponder() {
+      self.view.frame.origin.y -= getKeyboardHeight(notification)
+    }
   }
   
   func keyboardWillHide(notification: NSNotification) {
@@ -180,9 +207,9 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   
   @IBAction func choosePhoto(sender: AnyObject) {
     let choosePhotoController = UIImagePickerController()
+    choosePhotoController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
     choosePhotoController.allowsEditing = true
     choosePhotoController.delegate = self
-    choosePhotoController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
     self.navigationController!.presentViewController(choosePhotoController, animated: true, completion: nil)
   }
 
