@@ -33,6 +33,10 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     self.shareButton.enabled = false
   }
   
+  @IBAction func cancelNewMeme(sender: AnyObject) {
+    self.dismissViewControllerAnimated(true, completion: nil)
+  }
+  
   override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
     self.subscribeToKeyboardNotifications()
@@ -98,15 +102,6 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   * Implements helper functions to show and hide tool and navigation bar items.
   */
   
-  func toggleNavigationBar() {
-    let shouldHideNavBar = (self.navigationController?.navigationBarHidden == false)
-    self.navigationController?.setNavigationBarHidden(shouldHideNavBar, animated: false)
-  }
-  
-  func toggleToolbar() {
-    self.toolbar.hidden = (self.toolbar.hidden == false)
-  }
-  
   func generateMemedImage() -> UIImage {
     self.toggleNavigationBar()
     self.toggleToolbar()
@@ -123,10 +118,31 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   }
   
   /**
+  * Generate Meme (Helper Functions):
+  *
+  * When generating the memed image, the navigation bar and bottom toolbar will
+  * be hidden, or else they will be included in the image data.
+  */
+  
+  func toggleNavigationBar() {
+    let shouldHideNavBar = (self.navigationController?.navigationBarHidden == false)
+    self.navigationController?.setNavigationBarHidden(shouldHideNavBar, animated: false)
+  }
+  
+  func toggleToolbar() {
+    self.toolbar.hidden = (self.toolbar.hidden == false)
+  }
+  
+  /**
   * Save Meme: initialize a UIActivityViewController to share the Meme via iOS's default application activities.
   */
-  func saveMeme() {
-//    let meme = Meme(text: <#String#>, originalImage: <#UIImage#>, meme: <#UIImage#>)
+  func saveMeme(originalImage: UIImage, meme: UIImage) {
+    let text = topText.text + "," + bottomText.text
+    let meme = Meme(text: text, originalImage: originalImage, meme: meme)
+    
+    let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+    
+    appDelegate.memes.append(meme)
   }
   
   /**
@@ -141,16 +157,24 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     activityViewController.completionWithItemsHandler = {
       (activity: String!, completed: Bool, items: [AnyObject]!, error: NSError!) -> Void in
       if completed {
-        self.saveMeme()
+        self.saveMeme(self.imageView.image!, meme: memedImage)
         self.dismissViewControllerAnimated(true, completion: nil)
       }
     }
     
-    
     self.navigationController!.presentViewController(activityViewController, animated: true, completion: nil)
   }
 
-  // Keyboard notifications
+  /**
+  * Event Listeners:
+  * 
+  * keyboardWillShow:
+  * When the keyboard appears, if the active text field is on the bottom, then
+  * shift the view up.
+  *
+  * keyboardWillHide:
+  * When the keyboard disappears, move the view down if the frame is moved up
+  */
   
   func keyboardWillShow(notification: NSNotification) {
     if self.bottomText.isFirstResponder() {
@@ -159,7 +183,9 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   }
   
   func keyboardWillHide(notification: NSNotification) {
-    self.view.frame.origin.y += getKeyboardHeight(notification)
+    if self.bottomText.isFirstResponder() {
+      self.view.frame.origin.y += getKeyboardHeight(notification)
+    }
   }
   
   func getKeyboardHeight(notification: NSNotification) -> CGFloat {
@@ -167,8 +193,6 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as NSValue // of CGRect
     return keyboardSize.CGRectValue().height
   }
-  
-  // Event listeners
 
   func subscribeToKeyboardWillHideNotifications() {
     NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
@@ -189,7 +213,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   // Select image
   
   func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
-    if let image = info[UIImagePickerControllerEditedImage] as? UIImage {
+    if let image = info[UIImagePickerControllerOriginalImage] as? UIImage {
       imageView.image = image
       self.shareButton.enabled = true
       
@@ -208,7 +232,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   @IBAction func choosePhoto(sender: AnyObject) {
     let choosePhotoController = UIImagePickerController()
     choosePhotoController.sourceType = UIImagePickerControllerSourceType.PhotoLibrary
-    choosePhotoController.allowsEditing = true
+    choosePhotoController.allowsEditing = false
     choosePhotoController.delegate = self
     self.navigationController!.presentViewController(choosePhotoController, animated: true, completion: nil)
   }
