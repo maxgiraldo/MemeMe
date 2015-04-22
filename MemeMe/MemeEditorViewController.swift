@@ -15,6 +15,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   @IBOutlet weak var imageView: UIImageView!
   @IBOutlet weak var toolbar: UIToolbar!
   @IBOutlet weak var shareButton: UIBarButtonItem!
+  @IBOutlet weak var cameraButton: UIBarButtonItem!
   
   let memeTextAttributes: [NSString: AnyObject] = [
     NSStrokeColorAttributeName: UIColor.blackColor(),
@@ -30,6 +31,10 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     self.setDefaultTextAttributes(self.bottomText, defaultText: "BOTTOM")
 
     self.imageView.contentMode = UIViewContentMode.ScaleAspectFit
+    let cameraAvailable: Bool = UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.Camera)
+    if !cameraAvailable {
+      self.cameraButton.enabled = false
+    }
     self.shareButton.enabled = false
   }
   
@@ -120,8 +125,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   /**
   * Generate Meme (Helper Functions):
   *
-  * When generating the memed image, the navigation bar and bottom toolbar will
-  * be hidden, or else they will be included in the image data.
+  * When generating the memed image, the navigation bar and bottom toolbar will be hidden, or else they will be included in the image data.
   */
   
   func toggleNavigationBar() {
@@ -134,19 +138,19 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   }
   
   /**
-  * Save Meme: initialize a UIActivityViewController to share the Meme via iOS's default application activities.
+  * Initialize and add the newly created Meme instance to the global memes array located in the app delegate.
   */
   func saveMeme(originalImage: UIImage, meme: UIImage) {
     let text = topText.text + "," + bottomText.text
     let meme = Meme(text: text, originalImage: originalImage, meme: meme)
     
-    let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     appDelegate.memes.append(meme)
   }
   
   /**
-  * Share Meme: initialize a UIActivityViewController to share the Meme via iOS's default application activities.
+  * Initialize a UIActivityViewController to share the Meme via iOS's default application activities.
   */
   
   @IBAction func shareMeme(sender: AnyObject) {
@@ -166,14 +170,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   }
 
   /**
-  * Event Listeners:
-  * 
-  * keyboardWillShow:
-  * When the keyboard appears, if the active text field is on the bottom, then
-  * shift the view up.
-  *
-  * keyboardWillHide:
-  * When the keyboard disappears, move the view down if the frame is moved up
+  * When the keyboard appears, if the active text field is on the bottom, then shift the view up.
   */
   
   func keyboardWillShow(notification: NSNotification) {
@@ -182,6 +179,10 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
     }
   }
   
+  /**
+  * When the keyboard disappears, move the view down if the frame is moved up
+  */
+
   func keyboardWillHide(notification: NSNotification) {
     if self.bottomText.isFirstResponder() {
       self.view.frame.origin.y += getKeyboardHeight(notification)
@@ -190,7 +191,7 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   
   func getKeyboardHeight(notification: NSNotification) -> CGFloat {
     let userInfo = notification.userInfo
-    let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as NSValue // of CGRect
+    let keyboardSize = userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue // of CGRect
     return keyboardSize.CGRectValue().height
   }
 
@@ -227,6 +228,11 @@ class MemeEditorViewController: UIViewController, UINavigationControllerDelegate
   }
   
   @IBAction func takePhoto(sender: AnyObject) {
+    let takePhotoController = UIImagePickerController()
+    takePhotoController.sourceType = UIImagePickerControllerSourceType.Camera
+    takePhotoController.allowsEditing = false
+    takePhotoController.delegate = self
+    self.navigationController!.presentViewController(takePhotoController, animated: true, completion: nil)
   }
   
   @IBAction func choosePhoto(sender: AnyObject) {

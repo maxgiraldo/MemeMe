@@ -22,7 +22,7 @@ class Meme {
 
 extension Meme {
   class func all() -> [Meme] {
-    let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     return appDelegate.memes
   }
