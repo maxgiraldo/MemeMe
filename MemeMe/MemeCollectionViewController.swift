@@ -16,14 +16,17 @@ class MemeCollectionViewController: UICollectionViewController, UICollectionView
   
   var memes = [Meme]()
   
-  override func viewWillAppear(animated: Bool) {
+  override func viewDidLoad() {
     self.memes = Meme.all()
     if self.memes.count == 0 {
       self.performSegueWithIdentifier("newMeme", sender: self)
-    } else {
-      self.collectionView!.delegate = self
-      self.collectionView!.reloadData()
     }
+  }
+  
+  override func viewWillAppear(animated: Bool) {
+    self.memes = Meme.all()
+    self.collectionView!.delegate = self
+    self.collectionView!.reloadData()
   }
 
   @IBOutlet weak var newMemeButton: UIBarButtonItem!

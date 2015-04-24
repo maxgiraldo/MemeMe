@@ -21,13 +21,8 @@ class MemeTableViewController: UITableViewController, UITableViewDataSource {
   
   override func viewWillAppear(animated: Bool) {
     self.memes = Meme.all()
-    if self.memes.count == 0 {
-      self.performSegueWithIdentifier("newMeme", sender: self)
-    } else {
-      UITableView.appearance().layoutMargins = UIEdgeInsetsZero
-      self.tableView!.delegate = self
-      self.tableView!.reloadData()
-    }
+    self.tableView!.delegate = self
+    self.tableView!.reloadData()
   }
 
   override func viewDidLoad() {
