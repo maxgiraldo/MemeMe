@@ -49,7 +49,6 @@ class MemeTableViewController: UITableViewController, UITableViewDataSource {
   }
   
   override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-    println("hi")
     cell.preservesSuperviewLayoutMargins = false
     cell.layoutMargins = UIEdgeInsetsZero
     cell.indentationLevel = 0
