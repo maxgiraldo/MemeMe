@@ -120,40 +120,25 @@
         <scene sceneID="70y-sY-Bc7">
             <objects>
                 <tableViewController title="Memes" id="CO4-2b-nkw" customClass="MemeTableViewController" customModule="MemeMe" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="none" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="ATo-uV-gek">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="96" sectionHeaderHeight="22" sectionFooterHeight="22" id="ATo-uV-gek">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="0.0" reuseIdentifier="MemeTableViewCell" rowHeight="145" id="XfL-zM-US1" customClass="MemeTableViewCell" customModule="MemeMe" customModuleProvider="target">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="0.0" shouldIndentWhileEditing="NO" reuseIdentifier="MemeTableViewCell" textLabel="1oa-40-1mv" rowHeight="96" style="IBUITableViewCellStyleDefault" id="XfL-zM-US1" customClass="MemeTableViewCell" customModule="MemeMe" customModuleProvider="target">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XfL-zM-US1" id="SJO-E5-2GQ">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ion-r7-eu7">
-                                            <rect key="frame" x="10" y="0.0" width="299" height="145"/>
-                                        </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l7N-Ff-x5q">
-                                            <rect key="frame" x="317" y="62" width="275" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1oa-40-1mv">
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <constraints>
-                                        <constraint firstItem="ion-r7-eu7" firstAttribute="top" secondItem="SJO-E5-2GQ" secondAttribute="top" id="6Nh-7h-Agu"/>
-                                        <constraint firstItem="l7N-Ff-x5q" firstAttribute="trailing" secondItem="SJO-E5-2GQ" secondAttribute="trailingMargin" id="HY3-Va-5wx"/>
-                                        <constraint firstItem="l7N-Ff-x5q" firstAttribute="top" secondItem="SJO-E5-2GQ" secondAttribute="topMargin" constant="53" id="cW2-j7-iti"/>
-                                        <constraint firstAttribute="bottom" secondItem="ion-r7-eu7" secondAttribute="bottom" id="d7z-b8-dfV"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="l7N-Ff-x5q" secondAttribute="bottom" constant="55" id="qeQ-gQ-3sk"/>
-                                        <constraint firstItem="l7N-Ff-x5q" firstAttribute="leading" secondItem="ion-r7-eu7" secondAttribute="trailing" constant="10" id="ubT-Kg-f4G"/>
-                                        <constraint firstItem="ion-r7-eu7" firstAttribute="leading" secondItem="SJO-E5-2GQ" secondAttribute="leading" constant="8" id="zcu-2T-f10"/>
-                                    </constraints>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <outlet property="tableImageView" destination="ion-r7-eu7" id="HDj-q9-71t"/>
-                                    <outlet property="tableLabel" destination="l7N-Ff-x5q" id="ViM-PT-YpI"/>
-                                </connections>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </tableViewCell>
                         </prototypes>
                         <sections/>
@@ -353,6 +338,6 @@
         <image name="table" width="30" height="30"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Kmk-RL-SFq"/>
+        <segue reference="4D8-vg-MVE"/>
     </inferredMetricsTieBreakers>
 </document>

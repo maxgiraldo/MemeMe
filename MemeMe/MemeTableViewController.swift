@@ -21,7 +21,13 @@ class MemeTableViewController: UITableViewController, UITableViewDataSource {
   
   override func viewWillAppear(animated: Bool) {
     self.memes = Meme.all()
-    self.tableView!.reloadData()
+    if self.memes.count == 0 {
+      self.performSegueWithIdentifier("newMeme", sender: self)
+    } else {
+      UITableView.appearance().layoutMargins = UIEdgeInsetsZero
+      self.tableView!.delegate = self
+      self.tableView!.reloadData()
+    }
   }
 
   override func viewDidLoad() {
@@ -35,8 +41,8 @@ class MemeTableViewController: UITableViewController, UITableViewDataSource {
   override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier(reuseIdentifier) as! MemeTableViewCell
     let meme = self.memes[indexPath.row]
-    cell.tableImageView.image = meme.meme
-    cell.tableLabel.text = meme.text
+    cell.imageView?.image = meme.image
+    cell.textLabel?.text = meme.text
     
     return cell
   }
@@ -46,5 +52,13 @@ class MemeTableViewController: UITableViewController, UITableViewDataSource {
     detailController.meme = self.memes[indexPath.row]
     self.navigationController!.pushViewController(detailController, animated: true)
   }
-
+  
+  override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    println("hi")
+    cell.preservesSuperviewLayoutMargins = false
+    cell.layoutMargins = UIEdgeInsetsZero
+    cell.indentationLevel = 0
+    cell.separatorInset = UIEdgeInsetsZero
+  }
+  
 }
